@@ -1,0 +1,39 @@
+---
+title: 'Fit a Model: Health Expenditure'
+author: "Audrey Le Meur"
+date: "9/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading a Table
+
+First, we want to read the data from the file. To do that, we will use the R method read.table:
+
+```{r read}
+healthdata <- read.table(file = "data/healthdata.txt", header = TRUE)
+head(healthdata)
+```
+
+* if you're curious on how to take in text, look at the very first ROAS example for scatterplots.
+
+## Plot the Data
+
+Next, we will the plot the data that we read from the table:
+
+```{r plot}
+plot(lifespan~spending, data=healthdata)
+```
+
+## Fit the Model
+
+Last, we will fit the data to a linear model. To do this, we will use the R method lm:
+
+```{r fit}
+m1 <- lm(lifespan~spending, data=healthdata)
+summary(m1)
+```
+
