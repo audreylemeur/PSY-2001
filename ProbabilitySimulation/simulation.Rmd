@@ -1,0 +1,61 @@
+---
+title: 'Simulation: Dominant Hand'
+author: "Audrey Le Meur"
+date: "10/6/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In these notes, we will be learning different ways to simulate by using the example of dominant hand. At first, we will be assuming that people can be either right-handed or left-handed, and later we will consider ambidexterity.
+
+## Simulation of a binomial
+
+Let's simulate the number of left handed people in 1000 simulations.
+
+```{r binom}
+nsims = 1000
+nobs = rep(NA, nsims)
+nobs = rbinom(nsims, 14, 0.10)
+
+hist(nobs)
+```
+
+## Simulation of a class-sized sample
+
+First, we're going to run our simulation with 14 people (sample size), about the size of our class.
+
+```{r class}
+nsample = 14
+nobs = rbinom(nsims, nsample, 0.10)
+hist(nobs)
+```
+
+## Simulation of a large-size sample
+
+Next, let's try a much larger sample size.
+
+```{r}
+nsample = 331037
+nobs = rbinom(nsims, nsample, 0.10)
+hist(nobs)
+```
+
+## Comparing sample sizes
+
+The class-sized sample and the large-size sample differ in shape. The large-size sample will also be shifted away from zero. Notice how the large-size sample is also more similar to a normal distribution.
+
+## Simulation of a medium-size sample
+
+Now let's look at a simulation with sample size in-between our first two examples. Notice how this one also looks like a normal distribution centered at about 10.
+```{r}
+nsample = 100
+nobs = rbinom(nsims, nsample, 0.10)
+hist(nobs)
+```
+
+## Accounting for Ambidexterity
