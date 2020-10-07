@@ -1,0 +1,33 @@
+---
+title: "Basic Methods"
+author: "Audrey Le Meur"
+date: "9/29/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Weighed Averages
+
+First, read the data from the table and summarize the data frame.
+
+```{r read}
+d <- read.table("weighted.txt", header=TRUE)
+str(d)
+```
+
+Next, let's look at a specific vector using $. We can also manipulate that vector just like real numbers.
+
+```{r vector}
+d$n_trial
+d$n_trial/90
+```
+
+Now, we can assign a new column to our original data frame using that vector manipulation.
+
+```{r}
+d$w <- d$n_trial/90
+```
+
