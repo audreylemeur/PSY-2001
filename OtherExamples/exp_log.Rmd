@@ -1,0 +1,50 @@
+---
+title: "Exponents and Logorithms"
+author: "Audrey Le Meur"
+date: "10/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exponential
+
+The following is a plot of ten points in exponential model.
+
+```{r}
+x = seq(1:10)
+plot(x, exp(x))
+```
+
+## Logarithmic
+
+Now, let's plot the inverse: a logarithmic model.
+
+```{r}
+x = seq(1:10)
+plot(x, log(x))
+```
+
+## Practical Example
+
+Let's use the example of the sleep study from last class.
+
+```{r}
+library(lme4)
+d <- sleepstudy
+plot(Reaction~Days, data=d)
+abline(coef(lm(Reaction~Days, data=d)))
+```
+
+Now, let's put the data through a logarithmic translation.
+
+```{r}
+library(lme4)
+d <- sleepstudy
+plot(log(Reaction)~Days, data=d)
+abline(coef(lm(log(Reaction)~Days, data=d)))
+```
+
+Notice how the data has less variance after the logarithm is applied.
