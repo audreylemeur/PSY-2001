@@ -52,10 +52,31 @@ The class-sized sample and the large-size sample differ in shape. The large-size
 ## Simulation of a medium-size sample
 
 Now let's look at a simulation with sample size in-between our first two examples. Notice how this one also looks like a normal distribution centered at about 10.
-```{r}
+```{r med}
 nsample = 100
 nobs = rbinom(nsims, nsample, 0.10)
 hist(nobs)
 ```
 
 ## Accounting for Ambidexterity
+
+```{r ambi}
+nsims = 1000
+nobs = rep(NA, nsims)
+for(s in 1:nsims){
+  dominance <- sample(c("right", "left", "both"), size=400, replace=TRUE, prob=c(1/10,1/10,8/10))
+  people <- rep(NA, 400)
+  for(i in 1:400){
+    if (dominance[i]=="right"){
+      people[i] <- rbinom(1,1,0.8)
+    }else if (dominance[i]=="left"){
+      people[i] <- rbinom(1,1,0.1)
+    }else if (dominance[i]=="both"){
+      people[i] <- rbinom(1,1,0.1)
+    }
+  }
+  nobs[s] <- sum(people)
+}
+hist(nobs)
+```
+
