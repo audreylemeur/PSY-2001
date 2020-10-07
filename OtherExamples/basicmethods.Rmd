@@ -2,7 +2,9 @@
 title: "Basic Methods"
 author: "Audrey Le Meur"
 date: "9/29/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -21,13 +23,45 @@ str(d)
 Next, let's look at a specific vector using $. We can also manipulate that vector just like real numbers.
 
 ```{r vector}
+d <- read.table("weighted.txt", header=TRUE)
 d$n_trial
 d$n_trial/90
 ```
 
-Now, we can assign a new column to our original data frame using that vector manipulation.
+Now, we can assign a new column to our original data frame using that vector manipulation. Then, use those weights to calculate the weighted average.
+
+```{r new}
+d <- read.table("weighted.txt", header=TRUE)
+d$w <- d$n_trial/90
+d
+mean(d$w*d$mn_rt)
+```
+
+## Plotting averages
+
+Now, we will reference a sleep study from the library lattice.
 
 ```{r}
-d$w <- d$n_trial/90
+library(lme4)
+str(sleepstudy)
+```
+
+Now let's plot the average reaction of each participant over time. We can also add a linear regression line.
+
+```{r}
+library(lme4)
+d <- sleepstudy
+plot(Reaction~Days, data=d)
+m1 <- lm(Reaction~Days, data=d)
+abline(coef(m1))
+```
+
+Another way we can look at the data is to plot each participant individually.
+
+```{r}
+library(lattice)
+library(lme4)
+d <- sleepstudy
+xyplot(Reaction~Days|Subject, data=d)
 ```
 
