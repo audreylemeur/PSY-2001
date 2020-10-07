@@ -32,7 +32,7 @@ First, we're going to run our simulation with 14 people (sample size), about the
 ```{r class}
 nsample = 14
 nobs = rbinom(nsims, nsample, 0.10)
-hist(nobs)
+hist(nobs, main="Small (n=14)")
 ```
 
 ## Simulation of a large-size sample
@@ -42,7 +42,7 @@ Next, let's try a much larger sample size.
 ```{r}
 nsample = 331037
 nobs = rbinom(nsims, nsample, 0.10)
-hist(nobs)
+hist(nobs, main="Large (n=331037)")
 ```
 
 ## Comparing sample sizes
@@ -55,7 +55,7 @@ Now let's look at a simulation with sample size in-between our first two example
 ```{r med}
 nsample = 100
 nobs = rbinom(nsims, nsample, 0.10)
-hist(nobs)
+hist(nobs, main="Medium (n=100)")
 ```
 
 ## Accounting for Ambidexterity
@@ -77,6 +77,6 @@ for(s in 1:nsims){
   }
   nobs[s] <- sum(people)
 }
-hist(nobs)
+hist(nobs, main="Ambidexterity")
 ```
 
