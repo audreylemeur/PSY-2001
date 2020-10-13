@@ -1,0 +1,97 @@
+---
+title: "Central Tendency"
+author: "Audrey Le Meur"
+date: "10/13/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exam Data
+
+First, let's look at the histograms from the scores on two exams.
+
+```{r}
+d <- read.table("exam_scores.txt", header=TRUE)
+hist(d$ex1)
+hist(d$ex2)
+```
+
+## Mean and Median
+
+(*fill this in later*)
+
+```{r}
+d <- read.table("exam_scores.txt", header=TRUE)
+mean(d$ex1)
+median(d$ex1)
+mean(d$ex2)
+median(d$ex2)
+```
+
+## Comparing Scores between Exams
+
+Now, let's plot the scores from each exam using xyplot. 
+
+```{r}
+d <- read.table("exam_scores.txt", header=TRUE)
+plot(ex2~ex1, data=d)
+m1 = lm(formula=ex2~ex1, data=d)
+m1
+abline(coef(m1))
+```
+
+Note how the exam scores have a positive relationship but not quite a linear relationship. While it can be expected to perform similarily on both exams, there are also other factors at play such as the content and the conditions on the day the exam was taken.
+
+The slope of the linear regression is about 1 meaning for every point on the first exam, a student could be expected to have a point on the second exam.
+
+We can use xyplots and linear fits as a summary of the data just like we use mean or median.
+
+## P-value 
+
+```{r}
+d <- read.table("exam_scores.txt", header=TRUE)
+m1 = lm(formula=ex2~ex1, data=d)
+summary(m1)
+```
+
+The standard error is (*fill this in later*)
+
+t value is the ratio of our (*fill this in later*)
+
+The p-value in this case is very small. 
+
+## S-value
+
+An alternative to the p-value is the s-value, calculated by -log2(p-value). The approach transforms the p-value into a number that can be more easily interpreted. The s-value can be thought of as the probabiliy in terms of flipping a coin. For our comparison of the exam scores:
+
+```{r}
+-log2(9.52e-05)
+```
+
+The s-score here can be interpreted to mean the probability that a coin is flipped 13 times and all of them land on heads. So, this shows that the probability of no relationship between the exam 1 scores and the exam 2 scores is very small.
+
+## Confidence Intervals
+
+```{r}
+d <- read.table("exam_scores.txt", header=TRUE)
+m1 = lm(formula=ex2~ex1, data=d)
+confint(m1)
+```
+
+Our 95% confidence interval for the slope is (0.65, 1.54). We interpret this as the palusible range of values given the model assumptions.
+
+## Baysian Model
+
+*This does NOT work*
+
+```{r}
+#library(rstanarm)
+#d <- read.table("exam_scores.txt", header=TRUE)
+#stan_glm(ex1~ex2, data=d)
+```
+
