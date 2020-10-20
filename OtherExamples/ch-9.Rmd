@@ -1,0 +1,62 @@
+---
+title: "Chapter 9 Example"
+author: "Audrey Le Meur"
+date: "10/20/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Creating a table of means and standard deviation
+
+First, we want to create two tables: one with the means and one with the standard deviations. We'll use the R method tapply. tapply takes three parameters:x, the index, and the function. X is the data points that we want to summarize. The index is a list of the independent variables. The function is the summary statistic we want to apply (mean or standard deviation).
+
+```{r}
+d = read.table("ch-9-example.txt", header=TRUE)
+tapply(d$prop_cor, 
+       INDEX=list(d$study,d$test), 
+       FUN=mean)
+tapply(d$prop_cor, 
+       INDEX=list(d$study,d$test), 
+       FUN=sd)
+```
+
+These two lines give us a summary of the distributions of each of the four conditions.
+
+## Main effect of study
+
+We could also look at the effect of different
+
+```{r}
+d = read.table("ch-9-example.txt", header=TRUE)
+tapply(d$prop_cor, 
+       INDEX=list(d$study), 
+       FUN=mean)
+```
+
+This is not really useful in this case because there is an interaction between study and test. Therefore, we should analyze every combination of test and study.
+
+## Analysis of Variance
+
+To run an analysis of variance, we use the R method aov.
+
+```{r}
+d = read.table("ch-9-example.txt", header=TRUE)
+m1 = aov(prop_cor~study*test, data=d)
+summary(m1)
+```
+
+Notice how small the p-value is. The p-value here means that the effect of study format depends on the level of test format.
+
+## Linear model
+
+```{r}
+d = read.table("ch-9-example.txt", header=TRUE)
+m2 = lm(prop_cor~study*test,data=d)
+m2
+```
+
