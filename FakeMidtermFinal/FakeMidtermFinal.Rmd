@@ -1,7 +1,8 @@
 ---
-title: "Regression and Other Stories: Fake midterm and final exam"
+title: 'Regression and Other Stories: Fake midterm and final exam'
 author: "Andrew Gelman, Jennifer Hill, Aki Vehtari"
 date: "`r format(Sys.Date())`"
+output: pdf_document
 ---
 Fake dataset of 1000 students' scores on a midterm and final
 exam. See Chapter 6 in Regression and Other Stories.
@@ -21,7 +22,9 @@ savefigs <- FALSE
 library("rstanarm")
 ```
 
-**Simulate fake data**
+## Simulate fake data
+
+We want to create a fake data simulation to demonstrate regression towards the mean. First, we will simulate the true ability of 1000 students and then simulate the noise for each exam. Lastly, we will combine the simulations of each exam into one data frame.
 
 ```{r }
 n <- 1000
@@ -36,19 +39,39 @@ final <- true_ability + noise_2
 exams <- data.frame(midterm, final)
 ```
 
-**Linear regression**
+## Linear regression
 
-The option `refresh = 0` supresses the default Stan sampling
-progress output. This is useful for small data with fast
-computation. For more complex models and bigger data, it can be
-useful to see the progress.
+Now, let's find the linear regression when we compare the midterm to the final exam scores.
+
+*Note:* The option `refresh = 0` supresses the default Stan sampling progress output. This is useful for small data with fast computation. For more complex models and bigger data, it can be useful to see the progress.
 
 ```{r }
 fit_1 <- stan_glm(final ~ midterm, data=exams, refresh = 0)
 print(fit_1, digits=2)
 ```
 
-**Plot midterm and final exam scores**
+The slope is not equal to 1 because of regression to the mean. If you had an extreme value on the midterm, you are more likely to draw a score closer to the mean on the next observation.
+
+## Transforming the linear regression
+
+We can give the intercept a more useful interpretation by transforming the linear regression. In this case, we want to subtact the mean of the midterm exams from each midterm exam score.
+
+```{r }
+fit_2 <- stan_glm(final ~ I(midterm-50), data=exams, refresh = 0)
+print(fit_2, digits=2)
+```
+
+We can interpret this to mean that when a midterm exam score is equal to the midterm mean, then the same person's final exam score would be 50.1. 
+
+Now, let's look at the confidence interval for this linear regression:
+
+```{r}
+summary(fit_2)
+```
+
+While this doesn't align with the frequentist approach in our textbook, we can use the confidence interval to estimate a reasonable range of values of the slope and the intercept. So the reasonable values for intercept are (49.8, 50.7) and a reasonable value for the slope is 0.5.
+
+## Plot midterm and final exam scores
 
 ```{r eval=FALSE, include=FALSE}
 if (savefigs) pdf(here("FakeMidtermFinal/figs","FakeMidtermFinal1.pdf"), height=4, width=4)
