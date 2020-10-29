@@ -1,0 +1,114 @@
+---
+title: "Ordinal Logistic Regression"
+author: "Audrey Le Meur"
+date: "10/29/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Set up**
+
+Load neccessary libraries:
+
+```{r}
+library(MASS)
+library(Rcpp)
+library(rstanarm)
+library(foreign)
+```
+
+
+## Description of the Data
+
+A study looks at the factors that influence the decision of whether to apply to graduate school. Let's look at our data:
+
+```{r}
+dat <- read.dta("https://stats.idre.ucla.edu/stat/data/ologit.dta")
+head(dat)
+```
+
+## Counting Responses and Calculating Proporations
+
+The first step is to count up how many of the responses are in each category. We can use these counts to find the proportion of the total population in each category.
+
+```{r}
+xtabs(~apply+pared,data=dat)
+xtabs(~apply+pared,data=dat)/sum(xtabs(~apply+pared,data=dat))
+```
+
+## Running an Ordinal Logistic Regression
+
+To run an ordinal logistic regression, we use the method polr.
+
+```{r}
+m0 <- polr(apply~pared, data=dat)
+summary(m0)
+```
+
+These values aren't useful for us to look at because they are in logistic terms.
+
+## Predict from Fitted Model
+
+To transform the values from our model into useful numbers, we will predict from that model. Then we will use the R method round to make our table more readable.
+
+```{r}
+newdat <- data.frame(pared=c(0,1))
+phat <- predict(object = m0, newdat, type="p")
+round(t(phat), digits=2)
+```
+
+Each column represents a type of parent education and each row represents a proportion of students in that type of parent educations. Therefore, each column should add up to 1.0.
+
+We can interpret this table to mean that students whose parents completed graduate school are more likely to express interest in attending graduate school themselves.
+
+## Interpreting Intercepts and Coefficients
+
+The positive nature of the cofficient suggests the same conclusion from our model prediction in the last section.
+
+### Using binomial regression
+
+To interpret the intercepts, we use binomial regression. First, we create a new boolean (TRUE/FALSE) column that says if the apply status is "very likely" or not.
+
+```{r}
+dat$apply2 = dat$apply == "very likely"
+dat$apply3 = dat$apply == "very likely" | dat$apply == "somewhat likely"
+head(dat)
+```
+
+Next, let's count our new variable and apply a logistic regression.
+
+```{r}
+table(dat$apply3, dat$pared)
+glm(apply3~pared, family=binomial, data=dat)
+```
+
+Again, because it's a logistic regression, it's difficult to interpret. We can manually convert in R.
+
+```{r}
+#intercept
+invlogit(-0.3783)
+
+#effect
+invlogit(-0.3783+1.1438)
+```
+
+The intercept is interpreted as the proportion of students without graduate school educated parents who say they might be going to graduate school. We can interpret the effect or contrast as the proportion of students with graduate school educated parents who say they might be going to graduate school.
+
+### Using the ordinal logistic regression
+
+We can do similar analysis of the coefficients and intercepts of the ordinal logistic regression we ran earlier.
+
+```{r}
+#intercept
+invlogit(0.3768)
+
+#effect
+invlogit(0.3768+1.127)
+```
+
+The intercept is interpreted as the proportion of students without graduate school educated parents who say they will NOT be going to graduate school. In constrast, the effect is interpreted as the proportion of students with graduate school educated parents who say they will NOT be going to graduate school.
