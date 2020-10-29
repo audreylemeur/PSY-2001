@@ -23,13 +23,14 @@ tapply(d$prop_cor,
 tapply(d$prop_cor, 
        INDEX=list(d$study,d$test), 
        FUN=sd)
+
 ```
 
 These two lines give us a summary of the distributions of each of the four conditions.
 
 ## Main effect of study
 
-We could also look at the effect of different
+We could also look at the effect of the different test/study types.
 
 ```{r}
 d = read.table("ch-9-example.txt", header=TRUE)
@@ -54,9 +55,43 @@ Notice how small the p-value is. The p-value here means that the effect of study
 
 ## Linear model
 
+To make a linear model, lm has to transform our nominal categories into 0 and 1 coefficients before 
+
 ```{r}
 d = read.table("ch-9-example.txt", header=TRUE)
 m2 = lm(prop_cor~study*test,data=d)
 m2
+```
+
+The intercept represents the mean when both the test type and the study type are pictures. "studywrd" and "testwrd" represent the difference from the intercept when the study type is changed to words and the test type is changed to words respectively. Lastly, "studywrd:testwrd" is added to the three previous values to represent the mean when both the test and study type are words.
+
+## STAN model
+
+```{r}
+library(rstanarm)
+m3 = stan_glm(prop_cor~study*test, data=d, refresh=0)
+m3
+```
+
+## STAN logistic model
+
+We want to use a logistic model because all three other models analyzes binomial data using Gaussian models. The logistic transformation allows linear methods to be applied to proportion data (which is bounded by 0 and 1).
+
+```{r}
+m4 = stan_glm( cbind(prop_cor, 100-prop_cor)~study*test,
+               data=d,
+               family=binomial("logit"),
+               refresh=0)
+m4
+```
+
+We need to use inverse logistic to turn our results back into a proportion. *(need to go back to the recording and figure out what's going on here)*
+
+```{r}
+coef(m4)
+invlogit(1.9173394)
+invlogit(1.9173394-1.4587607)
+invlogit(1.9173394-0.8815533)
+invlogit(1.9173394-1.4587607-0.8815533+1.9172186)
 ```
 
