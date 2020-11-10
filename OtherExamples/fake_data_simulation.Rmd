@@ -1,0 +1,54 @@
+---
+title: "Fake-data Simulation"
+author: "Audrey Le Meur"
+date: "11/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rstanarm)
+```
+
+## Simulated Student Abilities
+
+We will simulate results of students on a midterm and a final.
+
+```{r}
+set.seed(1234)
+n <- 1000 #class size
+true_ability <- rnorm(n, 50, 10)
+noise_1 <- rnorm(n, 0, 10)
+noise_2 <- rnorm(n, 0, 10)
+midterm <- true_ability + noise_1
+final <- true_ability + noise_2
+
+```
+
+## Final Simulated Data Frame
+
+We can now compare the results of the midterm and the final. We want to know if we can use the results of the midterm to predict the results of the final.
+
+```{r}
+exams <- data.frame(midterm, final)
+fit_1 <- stan_glm(final ~ midterm, data=exams, refresh=0)
+summary(fit_1)
+```
+
+Now we can plot the simulated data.
+
+```{r}
+plot(midterm, final, xlab = "Midterm exam score", ylab = "Final exam score")
+abline(coef(fit_1))
+```
+
+## Transformed Intercept
+
+It would be more useful to transform the data in a way so that the intercept is a useful number for interpretation.
+
+```{r}
+fit_2 <- stan_glm(final ~ I(midterm-50), data=exams, refresh=0)
+summary(fit_2)
+```
+
+Now the intercept represents the score on the final if a student scored a 50 (average) on the midterm.
